@@ -46,11 +46,15 @@ router.put('/:id', async (req, res) => {
   try {
     const id = String(req.params.id);
     const { title, description, category, priority, status, dueDate } = req.body;
-    const task = await Task.findByIdAndUpdate(
-      id,
-      { title, description, category, priority, status, dueDate },
-      { new: true, runValidators: true }
-    );
+    const update = {
+      title: title !== undefined ? String(title) : undefined,
+      description: description !== undefined ? String(description) : undefined,
+      category: category !== undefined ? String(category) : undefined,
+      priority: priority !== undefined ? String(priority) : undefined,
+      status: status !== undefined ? String(status) : undefined,
+      dueDate: dueDate !== undefined ? dueDate : undefined,
+    };
+    const task = await Task.findByIdAndUpdate(id, update, { new: true, runValidators: true });
     if (!task) return res.status(404).json({ message: 'Task not found' });
     res.json(task);
   } catch (err) {
