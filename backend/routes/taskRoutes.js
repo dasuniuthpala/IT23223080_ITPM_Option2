@@ -7,9 +7,9 @@ router.get('/', async (req, res) => {
   try {
     const { category, status, priority } = req.query;
     const filter = {};
-    if (category) filter.category = category;
-    if (status) filter.status = status;
-    if (priority) filter.priority = priority;
+    if (category && typeof category === 'string') filter.category = category;
+    if (status && typeof status === 'string') filter.status = status;
+    if (priority && typeof priority === 'string') filter.priority = priority;
     const tasks = await Task.find(filter).sort({ createdAt: -1 });
     res.json(tasks);
   } catch (err) {
@@ -20,7 +20,8 @@ router.get('/', async (req, res) => {
 // GET single task
 router.get('/:id', async (req, res) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const id = String(req.params.id);
+    const task = await Task.findById(id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
     res.json(task);
   } catch (err) {
@@ -42,7 +43,8 @@ router.post('/', async (req, res) => {
 // PUT update task
 router.put('/:id', async (req, res) => {
   try {
-    const task = await Task.findByIdAndUpdate(req.params.id, req.body, {
+    const id = String(req.params.id);
+    const task = await Task.findByIdAndUpdate(id, req.body, {
       new: true,
       runValidators: true,
     });
@@ -56,7 +58,8 @@ router.put('/:id', async (req, res) => {
 // DELETE task
 router.delete('/:id', async (req, res) => {
   try {
-    const task = await Task.findByIdAndDelete(req.params.id);
+    const id = String(req.params.id);
+    const task = await Task.findByIdAndDelete(id);
     if (!task) return res.status(404).json({ message: 'Task not found' });
     res.json({ message: 'Task deleted successfully' });
   } catch (err) {
